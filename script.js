@@ -1,6 +1,8 @@
 function init() {
     console.log("Hello World");
-
+    $(".select-salesman select#salesman").val("reset");
+    $(".select-month select#month").val("reset");
+    $(".input input").val("")
     $(".input button").click(getvalueforPost);
     getammountfordate();
     getamountforsalesname();
@@ -169,7 +171,11 @@ function getamountforsalesname(){
     },
   });
 }
-
+// function checkvalue(name,month,amount){
+//   if(name==="reset"||month==="reset"|| isNaN(amount){
+//     console.log("dati errati");
+//   }
+// }
 function getvalueforPost(){
   var namevalue=$(".select-salesman select#salesman").val();
 
@@ -177,29 +183,42 @@ function getvalueforPost(){
   var monthString="01/"+monthvalue+"/2017";
   // console.log(monthvalue);
   var amountinput=$(".input input").val();
-  // console.log(amountinput);
+  console.log(amountinput);
   var parseamount=Number(amountinput);
+  console.log(parseamount);
   // console.log("name:",namevalue,"month:",monthvalue,"amount:",parseamount);
+  if(namevalue==="reset"||monthvalue==="reset"|| isNaN(parseamount)){
+    alert("Dati Errati");
+    if(namevalue==="reset"){
+      alert("Membro Non Selezionato Correttamente")
 
-  $.ajax({
-    url:"http://157.230.17.132:4012/sales",
-    method:"POST",
-    data:{
-      salesman:namevalue,
-      amount:parseamount,
-      date:monthString,
-    },
-    success:function(data){
-      // console.log(data);
-      $(".select-salesman select#salesman").val("reset");
-      $(".select-month select#month").val("reset");
-      $(".input input").val("");
-      location.reload();
-    },
-    error:function(error){
-      alert("error");
-    },
-  });
+    }else if(monthvalue==="reset"){
+      alert("Mese Non Selezionato Correttamente")
+    }
+    else if(isNaN(parseamount)){
+      alert("Ammontare non corrisponde a un numero")
+    }
+  }else{
+    $.ajax({
+      url:"http://157.230.17.132:4012/sales",
+      method:"POST",
+      data:{
+        salesman:namevalue,
+        amount:parseamount,
+        date:monthString,
+      },
+      success:function(data){
+        // console.log(data);
+        $(".select-salesman select#salesman").val("reset");
+        $(".select-month select#month").val("reset");
+        $(".input input").val("");
+        location.reload();
+      },
+      error:function(error){
+        alert("error");
+      },
+    });
+  }
 }
 function getSalesNumberForQuarter(data){
   var quarterobj=new Object;
