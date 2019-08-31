@@ -1,6 +1,7 @@
 function init() {
     console.log("Hello World");
 
+    $(".input button").click(getvalueforPost);
     getammountfordate();
     getamountforsalesname();
 }
@@ -43,7 +44,7 @@ function getamountotal(data){
 
   var amounttotal=0;
   for(var i=0;i<data.length;i++){
-    amounttotal=amounttotal+data[i].amount;
+    amounttotal=amounttotal+Number(data[i].amount);
   }
 
   return amounttotal;
@@ -56,7 +57,7 @@ function getammount(data){
   for(var i=0;i<data.length;i++){
     monthnumber=data[i].date;
     monthparse=moment(monthnumber,"DD/MM/YYYY").month();
-    ammount=data[i].amount;
+    ammount=Number(data[i].amount);
     monthammount[monthparse]+=ammount;
 
   }
@@ -81,7 +82,7 @@ function getammountforname(data){
       // console.log(dipendenti[j].name,"nome");
       if(data[i].salesman==dipendenti.name[j]){
         console.log("sei qui");
-        dipendenti.ammontare[j]+=data[i].amount;
+        dipendenti.ammontare[j]+=Number(data[i].amount);
       }
     }
   }
@@ -106,7 +107,7 @@ function getammountfordate(){
     success:function(data){
       var amountformonth=getammount(data);
       var months=getmonthlist();
-      var ctx = document.getElementById('myChart-line').getContext('2d');
+      var ctx = document.getElementById('myChartline').getContext('2d');
       var myChart = new Chart(ctx, {
         type:'line',
         data: {
@@ -161,6 +162,38 @@ function getamountforsalesname(){
 
     },
     error:function(){
+      alert("error");
+    },
+  });
+}
+
+function getvalueforPost(){
+  var namevalue=$(".select-salesman select#salesman").val();
+
+  var monthvalue=$(".select-month select#month").val();
+  var monthString="01/"+monthvalue+"/2017";
+  console.log(monthvalue);
+  var amountinput=$(".input input").val();
+  console.log(amountinput);
+  var parseamount=Number(amountinput);
+  console.log("name:",namevalue,"month:",monthvalue,"amount:",parseamount);
+
+  $.ajax({
+    url:"http://157.230.17.132:4012/sales",
+    method:"POST",
+    data:{
+      salesman:namevalue,
+      amount:parseamount,
+      date:monthString,
+    },
+    success:function(data){
+      console.log(data);
+      $(".select-salesman select#salesman").val("reset");
+      $(".select-month select#month").val("reset");
+      $(".input input").val("");
+      location.reload();
+    },
+    error:function(error){
       alert("error");
     },
   });
